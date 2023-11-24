@@ -1,6 +1,13 @@
 package com.example.geospot.category;
 
+import com.example.geospot.exception.ApiRequestException;
+import com.example.geospot.exception.CategoryNotFoundException;
+import com.example.geospot.exception.ResourceNotFoundException;
+import com.example.geospot.pagination.CustomPage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -11,24 +18,25 @@ import java.util.Optional;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
+    @Autowired
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public Page<Category> getAllCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable);
     }
 
-    public void addNewCategory(@Validated Category category) {
-        Optional<Category> categoryOptional = categoryRepository.findCategoryByName(category.getName());
-        if (categoryOptional.isPresent()) {
-            throw new IllegalStateException("Category already exists");
+    public void addNewCategory(@Validated Category category) throws ApiRequestException {
+        boolean categoryExists = categoryRepository.existsByName(category.getName());
+        if (categoryExists) {
+            throw new ApiRequestException("Category already exists");
         }
 
         categoryRepository.save(category);
     }
 
-    public Optional<Category> getCategoryById(int id) {
-        return categoryRepository.findById(id);
+    public Category getCategoryById(long id) {
+        return categoryRepository.findById(id).orElseThrow(CategoryNotFoundException::new);
     }
 }

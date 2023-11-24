@@ -1,19 +1,28 @@
 package com.example.geospot.category;
 
+import com.example.geospot.place.Place;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @Table
-public class Category {
+public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NotBlank
     private String name;
+    @NotBlank
     private String symbol;
     private String description;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+    private Set<Place> places = new HashSet<>();
 
     public Category() {
 
@@ -55,5 +64,10 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void addPlace(Place place) {
+        places.add(place);
+        place.setCategory(this);
     }
 }

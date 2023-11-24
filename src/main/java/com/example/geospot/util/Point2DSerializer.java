@@ -11,9 +11,9 @@ import java.io.IOException;
 public class Point2DSerializer extends JsonSerializer<Point<G2D>> {
     @Override
     public void serialize(Point<G2D> g2DPoint, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        jsonGenerator.writeStartArray();
-        jsonGenerator.writeNumber(g2DPoint.getPosition().getCoordinate(1));
-        jsonGenerator.writeNumber(g2DPoint.getPosition().getCoordinate(2));
-        jsonGenerator.writeEndArray();
+        jsonGenerator.writeStartObject();
+        jsonGenerator.writeNumberField("latitude", g2DPoint.getPosition().getCoordinate(1));
+        jsonGenerator.writeNumberField("longitude", g2DPoint.getPosition().getCoordinate(0));
+        jsonGenerator.writeEndObject();
     }
 }

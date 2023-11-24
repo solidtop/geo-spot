@@ -1,4 +1,4 @@
-package com.example.geospot.location;
+package com.example.geospot.place;
 
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.crs.CoordinateReferenceSystem;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
 
 @Configuration
-public class LocationConfig {
+public class PlaceConfig {
     @Bean
     GeolatteGeomModule geolatteGeomModule() {
         CoordinateReferenceSystem<G2D> crs = WGS84;
