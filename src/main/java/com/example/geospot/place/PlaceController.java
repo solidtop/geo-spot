@@ -4,11 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/places")
@@ -37,27 +34,30 @@ public class PlaceController {
     }
 
     @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updatePlace(@PathVariable long id, @RequestBody @Validated PlaceRequest placeRequest) {
         placeService.updatePlace(id, placeRequest);
     }
 
-    @PatchMapping("/{id}") // TODO: Not completed yet
-    public void updateCategoryId(@PathVariable long id, @RequestBody long categoryId) {
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateCategoryId(@PathVariable long id, @RequestBody @Validated CategoryId categoryId) {
         placeService.updateCategoryId(id, categoryId);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePlaceById(@PathVariable long id) {
         placeService.deletePlaceById(id);
     }
 
     @GetMapping("/category/{categoryName}")
-    public List<PlaceResponse> getPlacesByCategoryName(@PathVariable String categoryName) {
-        return placeService.getPlacesByCategoryName(categoryName);
+    public Page<PlaceResponse> getPlacesByCategoryName(@PathVariable String categoryName, Pageable pageable) {
+        return placeService.getPlacesByCategoryName(categoryName, pageable);
     }
 
     @GetMapping("/nearby")
-    public List<PlaceResponse> getNearbyPlaces(@Validated NearbyRequest nearbyRequest) {
-        return placeService.getNearbyPlaces(nearbyRequest);
+    public Page<PlaceResponse> getNearbyPlaces(@Validated NearbyRequest nearbyRequest, Pageable pageable) {
+        return placeService.getNearbyPlaces(nearbyRequest, pageable);
     }
 }

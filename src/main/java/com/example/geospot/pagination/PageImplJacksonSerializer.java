@@ -16,7 +16,7 @@ public class PageImplJacksonSerializer extends JsonSerializer<PageImpl<?>> {
         jsonGenerator.writeObjectField("content", page.getContent());
         jsonGenerator.writeNumberField("totalElements", page.getTotalElements());
         jsonGenerator.writeNumberField("totalPages", page.getTotalPages());
-        jsonGenerator.writeNumberField("pageNumber", page.getPageable().getPageNumber());
+        jsonGenerator.writeNumberField("pageNumber", page.getPageable().getPageNumber() + 1);
         jsonGenerator.writeNumberField("pageSize", page.getPageable().getPageSize());
         jsonGenerator.writeEndObject();
     }

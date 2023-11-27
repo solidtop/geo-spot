@@ -7,23 +7,26 @@ import jakarta.validation.constraints.Size;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
 
+import java.time.ZonedDateTime;
+
 public record PlaceResponse(
+        long id,
         @JsonSerialize(using = Point2DSerializer.class)
         Point<G2D> coordinate,
-        @NotBlank
-        @Size(max = 255)
         String name,
-        @Size(max = 255)
         String description,
-        @NotBlank
-        String category
-) {
+        String category,
+        ZonedDateTime createdAt,
+        ZonedDateTime updatedAt) {
     public static PlaceResponse of(Place place) {
         return new PlaceResponse(
+                place.getId(),
                 place.getCoordinate(),
                 place.getName(),
                 place.getDescription(),
-                place.getCategory().getName()
+                place.getCategory().getName(),
+                place.getCreatedAt(),
+                place.getUpdatedAt()
         );
     }
 }

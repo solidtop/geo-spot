@@ -2,18 +2,14 @@ package com.example.geospot.place;
 
 import com.example.geospot.category.Category;
 import com.example.geospot.category.CategoryRepository;
-import com.example.geospot.exception.ApiRequestException;
 import com.example.geospot.exception.CategoryNotFoundException;
 import com.example.geospot.exception.PlaceNotFoundException;
-import com.example.geospot.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
 
 @Service
 public class PlaceService {
@@ -54,24 +50,30 @@ public class PlaceService {
     }
 
     @Transactional
-    public void updateCategoryId(long id, long categoryId) {
+    public void updateCategoryId(long id, @Validated CategoryId categoryId) {
         Place place = placeRepository.findById(id).orElseThrow(PlaceNotFoundException::new);
-        categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
+        categoryRepository.findById(categoryId.id()).orElseThrow(CategoryNotFoundException::new);
         Category category = new Category();
-        category.setId(categoryId);
+        category.setId(categoryId.id());
+        category.addPlace(place);
         place.setCategory(category);
+
         placeRepository.save(place);
     }
 
+    @Transactional
     public void deletePlaceById(long id) {
+        placeRepository.findById(id).orElseThrow(PlaceNotFoundException::new);
         placeRepository.deleteById(id);
     }
 
-    public List<PlaceResponse> getPlacesByCategoryName(String categoryName) {
-        return placeRepository.findAllByCategoryName(categoryName).stream().map(PlaceResponse::of).toList();
+    public Page<PlaceResponse> getPlacesByCategoryName(String categoryName, Pageable pageable) {
+        return placeRepository.findAllByCategoryName(categoryName, pageable).map(PlaceResponse::of);
     }
 
-    public List<PlaceResponse> getNearbyPlaces(@Validated NearbyRequest nearbyDto) {
-        return placeRepository.findAll().stream().map(PlaceResponse::of).toList();
+    public Page<PlaceResponse> getNearbyPlaces(@Validated NearbyRequest nearbyRequest, Pageable pageable) {
+        String pointText = "POINT(" + nearbyRequest.lng() + " " + nearbyRequest.lat() + ")";
+        double radius = nearbyRequest.radius();
+        return placeRepository.findNearbyPlaces(pointText, radius, pageable).map(PlaceResponse::of);
     }
 }

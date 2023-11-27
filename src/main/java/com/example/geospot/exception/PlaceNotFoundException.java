@@ -5,6 +5,10 @@ public class PlaceNotFoundException extends ResourceNotFoundException {
         super("Place not found");
     }
 
+    public PlaceNotFoundException(long placeId) {
+        super("Place not found with id " + placeId);
+    }
+
     public PlaceNotFoundException(String message) {
         super(message);
     }

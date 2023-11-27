@@ -2,17 +2,11 @@ package com.example.geospot.category;
 
 import com.example.geospot.exception.ApiRequestException;
 import com.example.geospot.exception.CategoryNotFoundException;
-import com.example.geospot.exception.ResourceNotFoundException;
-import com.example.geospot.pagination.CustomPage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CategoryService {

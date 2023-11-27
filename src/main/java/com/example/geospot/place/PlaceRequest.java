@@ -7,10 +7,10 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 
 public record PlaceRequest(
-        @Latitude
-        double latitude,
         @Longitude
         double longitude,
+        @Latitude
+        double latitude,
         @NotBlank
         @Size(max = 255)
         String name,
@@ -20,8 +20,8 @@ public record PlaceRequest(
 ) implements Serializable {
         public static PlaceRequest of(Place place) {
                 return new PlaceRequest(
-                        place.getCoordinate().getPosition().getLat(),
                         place.getCoordinate().getPosition().getLon(),
+                        place.getCoordinate().getPosition().getLat(),
                         place.getName(),
                         place.getDescription(),
                         place.getCategory().getId()

@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
-import org.geolatte.geom.codec.Wkt;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
@@ -122,14 +121,17 @@ public class Place implements Serializable {
     public static Place of(PlaceRequest placeRequest) {
         Place place = new Place();
 
-        Point<G2D> coordinate = (Point<G2D>) Wkt.fromWkt("POINT (" + placeRequest.latitude() +  " " + placeRequest.longitude() + ")", WGS84);
+        Point<G2D> coordinate = new Point<>(new G2D(placeRequest.longitude(), placeRequest.latitude()), WGS84);
         place.setCoordinate(coordinate);
+
         place.setName(placeRequest.name());
         place.setDescription(placeRequest.description());
 
         Category category = new Category();
         category.setId(placeRequest.categoryId());
         category.addPlace(place);
+        place.setCategory(category);
+
         return place;
     }
 

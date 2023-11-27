@@ -1,13 +1,19 @@
 package com.example.geospot.place;
 
-import org.springframework.web.bind.annotation.RequestParam;
+import com.example.geospot.validation.Latitude;
+import com.example.geospot.validation.Longitude;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Range;
 
 public record NearbyRequest(
-    @RequestParam
-    double lat,
-    @RequestParam
+    @Longitude
+    @NotNull
     double lng,
-    @RequestParam
+    @Latitude
+    @NotNull
+    double lat,
+    @Range(min = 0, max = 1000000)
+    @NotNull
     double radius
 ) {
 }
