@@ -26,16 +26,13 @@ public class PlaceService {
     }
 
     public void addNewPlace(@Validated PlaceRequest placeRequest) {
-        boolean categoryExists = categoryRepository.existsById(placeRequest.categoryId());
-        if (categoryExists) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = authentication.getName();
-            Place place = Place.of(placeRequest);
-            place.setUserId(username);
-            placeRepository.save(place);
-        } else {
-            throw new CategoryNotFoundException(placeRequest.categoryId());
-        }
+        categoryRepository.findById(placeRequest.categoryId()).orElseThrow(CategoryNotFoundException::new);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Place place = Place.of(placeRequest);
+        place.setUserId(username);
+        placeRepository.save(place);
     }
 
     public Page<PlaceResponse> getAllPublicPlaces(Pageable pageable) {
