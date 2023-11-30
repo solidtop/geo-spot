@@ -1,12 +1,15 @@
 package com.example.geospot.place;
 
 import com.example.geospot.category.Category;
+import com.example.geospot.category.CategoryId;
 import com.example.geospot.category.CategoryRepository;
 import com.example.geospot.exception.CategoryNotFoundException;
 import com.example.geospot.exception.PlaceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -25,19 +28,27 @@ public class PlaceService {
     public void addNewPlace(@Validated PlaceRequest placeRequest) {
         boolean categoryExists = categoryRepository.existsById(placeRequest.categoryId());
         if (categoryExists) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
             Place place = Place.of(placeRequest);
+            place.setUserId(username);
             placeRepository.save(place);
         } else {
             throw new CategoryNotFoundException(placeRequest.categoryId());
         }
     }
 
-    public Page<PlaceResponse> getAllPlaces(Pageable pageable) {
-        return placeRepository.findAll(pageable).map(PlaceResponse::of);
+    public Page<PlaceResponse> getAllPublicPlaces(Pageable pageable) {
+        return placeRepository.findAllByVisible(true, pageable).map(PlaceResponse::of);
     }
 
-    public PlaceResponse getPlaceById(long id) {
-        return placeRepository.findById(id).map(PlaceResponse::of).orElseThrow(
+    public Page<PlaceResponse> getAllUserPlaces(Pageable pageable) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return placeRepository.findAllByUserId(username, pageable).map(PlaceResponse::of);
+    }
+
+    public PlaceResponse getPublicPlaceById(long id) {
+        return placeRepository.findByIdAndVisible(id, true).map(PlaceResponse::of).orElseThrow(
                 PlaceNotFoundException::new);
     }
 
@@ -55,7 +66,6 @@ public class PlaceService {
         categoryRepository.findById(categoryId.id()).orElseThrow(CategoryNotFoundException::new);
         Category category = new Category();
         category.setId(categoryId.id());
-        category.addPlace(place);
         place.setCategory(category);
 
         placeRepository.save(place);
@@ -63,17 +73,18 @@ public class PlaceService {
 
     @Transactional
     public void deletePlaceById(long id) {
-        placeRepository.findById(id).orElseThrow(PlaceNotFoundException::new);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        placeRepository.findByIdAndUserId(id, username).orElseThrow(PlaceNotFoundException::new);
         placeRepository.deleteById(id);
     }
 
-    public Page<PlaceResponse> getPlacesByCategoryName(String categoryName, Pageable pageable) {
-        return placeRepository.findAllByCategoryName(categoryName, pageable).map(PlaceResponse::of);
+    public Page<PlaceResponse> getPublicPlacesByCategoryId(long categoryId, Pageable pageable) {
+        return placeRepository.findAllByVisibleAndCategoryId(true, categoryId, pageable).map(PlaceResponse::of);
     }
 
-    public Page<PlaceResponse> getNearbyPlaces(@Validated NearbyRequest nearbyRequest, Pageable pageable) {
-        String pointText = "POINT(" + nearbyRequest.lng() + " " + nearbyRequest.lat() + ")";
+    public Page<PlaceResponse> getNearbyPublicPlaces(@Validated NearbyRequest nearbyRequest, Pageable pageable) {
+        String pointText = "POINT(" + nearbyRequest.lat() + " " + nearbyRequest.lng() + ")";
         double radius = nearbyRequest.radius();
-        return placeRepository.findNearbyPlaces(pointText, radius, pageable).map(PlaceResponse::of);
+        return placeRepository.findAllNearby(pointText, radius, pageable).map(PlaceResponse::of);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.geospot.place;
+package com.example.geospot.category;
 
 import jakarta.validation.constraints.NotNull;
 

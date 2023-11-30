@@ -1,5 +1,6 @@
 package com.example.geospot.place;
 
+import com.example.geospot.category.CategoryId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,13 +25,13 @@ public class PlaceController {
     }
 
     @GetMapping
-    public Page<PlaceResponse> getAllPlaces(Pageable pageable) {
-        return placeService.getAllPlaces(pageable);
+    public Page<PlaceResponse> getAllPublicPlaces(Pageable pageable) {
+        return placeService.getAllPublicPlaces(pageable);
     }
 
     @GetMapping("/{id}")
-    public PlaceResponse getPlaceById(@PathVariable long id) {
-        return placeService.getPlaceById(id);
+    public PlaceResponse getPublicPlaceById(@PathVariable long id) {
+        return placeService.getPublicPlaceById(id);
     }
 
     @PutMapping("/{id}")
@@ -51,13 +52,13 @@ public class PlaceController {
         placeService.deletePlaceById(id);
     }
 
-    @GetMapping("/category/{categoryName}")
-    public Page<PlaceResponse> getPlacesByCategoryName(@PathVariable String categoryName, Pageable pageable) {
-        return placeService.getPlacesByCategoryName(categoryName, pageable);
+    @GetMapping("/category/{categoryId}")
+    public Page<PlaceResponse> getPublicPlacesByCategoryId(@PathVariable long categoryId, Pageable pageable) {
+        return placeService.getPublicPlacesByCategoryId(categoryId, pageable);
     }
 
     @GetMapping("/nearby")
-    public Page<PlaceResponse> getNearbyPlaces(@Validated NearbyRequest nearbyRequest, Pageable pageable) {
-        return placeService.getNearbyPlaces(nearbyRequest, pageable);
+    public Page<PlaceResponse> getNearbyPublicPlaces(@Validated NearbyRequest nearbyRequest, Pageable pageable) {
+        return placeService.getNearbyPublicPlaces(nearbyRequest, pageable);
     }
 }

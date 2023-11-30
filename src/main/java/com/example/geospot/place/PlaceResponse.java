@@ -2,8 +2,6 @@ package com.example.geospot.place;
 
 import com.example.geospot.util.Point2DSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
 

@@ -21,11 +21,9 @@ public class CategoryService {
         return categoryRepository.findAll(pageable);
     }
 
-    public void addNewCategory(@Validated Category category) throws ApiRequestException {
-        boolean categoryExists = categoryRepository.existsByName(category.getName());
-        if (categoryExists) {
-            throw new ApiRequestException("Category already exists");
-        }
+    public void addNewCategory(@Validated Category category) {
+        categoryRepository.findByName(category.getName()).orElseThrow(() ->
+                new ApiRequestException("Category already exists"));
 
         categoryRepository.save(category);
     }

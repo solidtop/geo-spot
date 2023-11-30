@@ -8,9 +8,5 @@ public class PlaceNotFoundException extends ResourceNotFoundException {
     public PlaceNotFoundException(long placeId) {
         super("Place not found with id " + placeId);
     }
-
-    public PlaceNotFoundException(String message) {
-        super(message);
-    }
 }
 

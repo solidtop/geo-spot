@@ -1,6 +1,5 @@
 package com.example.geospot.exception;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -23,7 +22,7 @@ public class ApiExceptionHandler {
         ApiException apiException = new ApiException(
                 e.getMessage(),
                 HttpStatus.BAD_REQUEST,
-                ZonedDateTime.now(ZoneId.of("Z"))
+                getTimestamp()
         );
 
         return new ResponseEntity<>(apiException, HttpStatus.BAD_REQUEST);
@@ -34,7 +33,7 @@ public class ApiExceptionHandler {
         ApiException apiException = new ApiException(
                 e.getMessage(),
                 HttpStatus.NOT_FOUND,
-                ZonedDateTime.now(ZoneId.of("Z"))
+                getTimestamp()
         );
 
         return new ResponseEntity<>(apiException, HttpStatus.NOT_FOUND);
@@ -56,5 +55,9 @@ public class ApiExceptionHandler {
         Map<String, List<ErrorResponse>> response = new HashMap<>();
         response.put("errors", errors);
         return  new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    private ZonedDateTime getTimestamp() {
+        return ZonedDateTime.now(ZoneId.of("Z"));
     }
 }
