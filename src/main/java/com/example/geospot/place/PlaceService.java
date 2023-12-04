@@ -25,16 +25,6 @@ public class PlaceService {
         this.categoryRepository = categoryRepository;
     }
 
-    public void addNewPlace(@Validated PlaceRequest placeRequest) {
-        categoryRepository.findById(placeRequest.categoryId()).orElseThrow(CategoryNotFoundException::new);
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Place place = Place.of(placeRequest);
-        place.setUserId(username);
-        placeRepository.save(place);
-    }
-
     public Page<PlaceResponse> getAllPublicPlaces(Pageable pageable) {
         return placeRepository.findAllByVisible(true, pageable).map(PlaceResponse::of);
     }
@@ -47,6 +37,17 @@ public class PlaceService {
     public PlaceResponse getPublicPlaceById(long id) {
         return placeRepository.findByIdAndVisible(id, true).map(PlaceResponse::of).orElseThrow(
                 PlaceNotFoundException::new);
+    }
+
+    @Transactional
+    public void addNewPlace(@Validated PlaceRequest placeRequest) {
+        categoryRepository.findById(placeRequest.categoryId()).orElseThrow(CategoryNotFoundException::new);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Place place = Place.of(placeRequest);
+        place.setUserId(username);
+        placeRepository.save(place);
     }
 
     @Transactional
