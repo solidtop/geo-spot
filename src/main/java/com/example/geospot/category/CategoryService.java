@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Optional;
+
 @Service
 public class CategoryService {
     private final CategoryRepository categoryRepository;
@@ -28,8 +30,10 @@ public class CategoryService {
 
     @Transactional
     public void addNewCategory(@Validated Category category) {
-        categoryRepository.findByName(category.getName()).orElseThrow(() ->
-                new ApiRequestException("Category already exists"));
+        Optional<Category> categoryOptional = categoryRepository.findByName(category.getName());
+        if (categoryOptional.isPresent()) {
+            throw new ApiRequestException("Category already exists");
+        }
 
         categoryRepository.save(category);
     }
