@@ -5,6 +5,8 @@ import com.example.geospot.category.CategoryId;
 import com.example.geospot.category.CategoryRepository;
 import com.example.geospot.exception.CategoryNotFoundException;
 import com.example.geospot.exception.PlaceNotFoundException;
+import org.geolatte.geom.G2D;
+import org.geolatte.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,9 +54,19 @@ public class PlaceService {
 
     @Transactional
     public void updatePlace(long id, @Validated PlaceRequest placeRequest) {
-        placeRepository.findById(id).orElseThrow(PlaceNotFoundException::new);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Place place = placeRepository.findByIdAndUserId(id, username).orElseThrow(PlaceNotFoundException::new);
         categoryRepository.findById(placeRequest.categoryId()).orElseThrow(CategoryNotFoundException::new);
-        Place place = Place.of(placeRequest);
+
+        Point<G2D> coordinate = Place.toCoordinate(placeRequest.longitude(), placeRequest.latitude());
+        place.setCoordinate(coordinate);
+        place.setName(placeRequest.name());
+        place.setDescription(placeRequest.description());
+        place.setVisible(placeRequest.visible());
+        Category category = new Category();
+        category.setId(placeRequest.categoryId());
+        place.setCategory(category);
+
         placeRepository.save(place);
     }
 

@@ -13,6 +13,7 @@ import org.geolatte.geom.G2D;
 import org.geolatte.geom.Point;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.ZonedDateTime;
 
 import static org.geolatte.geom.crs.CoordinateReferenceSystems.WGS84;
@@ -36,7 +37,6 @@ public class Place {
     private boolean visible;
     @Column(nullable = false)
     private String userId;
-
     @CreationTimestamp
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
@@ -47,9 +47,7 @@ public class Place {
     public static Place of(PlaceRequest placeRequest) {
         Place place = new Place();
 
-        Point<G2D> coordinate = new Point<>(new G2D(placeRequest.longitude(), placeRequest.latitude()), WGS84);
-        place.setCoordinate(coordinate);
-
+        place.setCoordinate(Place.toCoordinate(placeRequest.longitude(), placeRequest.latitude()));
         place.setName(placeRequest.name());
         place.setDescription(placeRequest.description());
         place.setVisible(placeRequest.visible());
@@ -59,5 +57,9 @@ public class Place {
         place.setCategory(category);
 
         return place;
+    }
+
+    public static Point<G2D> toCoordinate(double lng, double lat) {
+        return new Point<>(new G2D(lng, lat), WGS84);
     }
 }
