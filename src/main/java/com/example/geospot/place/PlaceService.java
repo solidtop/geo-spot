@@ -10,7 +10,6 @@ import org.geolatte.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,8 +45,7 @@ public class PlaceService {
         long categoryId = placeRequest.categoryId() == 0 ? 1 : placeRequest.categoryId();
         categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Place place = new Place();
         place.setCoordinate(Place.toCoordinate(placeRequest.longitude(), placeRequest.latitude()));
         place.setName(placeRequest.name());
