@@ -43,12 +43,22 @@ public class PlaceService {
 
     @Transactional
     public void addNewPlace(@Validated PlaceRequest placeRequest) {
-        categoryRepository.findById(placeRequest.categoryId()).orElseThrow(CategoryNotFoundException::new);
+        long categoryId = placeRequest.categoryId() == 0 ? 1 : placeRequest.categoryId();
+        categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        Place place = Place.of(placeRequest);
+        Place place = new Place();
+        place.setCoordinate(Place.toCoordinate(placeRequest.longitude(), placeRequest.latitude()));
+        place.setName(placeRequest.name());
+        place.setDescription(placeRequest.description());
+        place.setVisible(placeRequest.visible());
+
+        Category category = new Category();
+        category.setId(categoryId);
+        place.setCategory(category);
         place.setUserId(username);
+
         placeRepository.save(place);
     }
 

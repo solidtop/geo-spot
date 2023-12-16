@@ -44,21 +44,6 @@ public class Place {
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
 
-    public static Place of(PlaceRequest placeRequest) {
-        Place place = new Place();
-
-        place.setCoordinate(Place.toCoordinate(placeRequest.longitude(), placeRequest.latitude()));
-        place.setName(placeRequest.name());
-        place.setDescription(placeRequest.description());
-        place.setVisible(placeRequest.visible());
-
-        Category category = new Category();
-        category.setId(placeRequest.categoryId());
-        place.setCategory(category);
-
-        return place;
-    }
-
     public static Point<G2D> toCoordinate(double lng, double lat) {
         return new Point<>(new G2D(lng, lat), WGS84);
     }

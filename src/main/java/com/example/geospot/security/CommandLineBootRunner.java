@@ -1,5 +1,8 @@
 package com.example.geospot.security;
 
+import com.example.geospot.category.Category;
+import com.example.geospot.category.CategoryRepository;
+import com.example.geospot.category.CategoryService;
 import com.example.geospot.role.Role;
 import com.example.geospot.role.RoleRepository;
 import com.example.geospot.user.UserEntity;
@@ -10,20 +13,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Optional;
 import java.util.Set;
 
 @Component
 public class CommandLineBootRunner implements CommandLineRunner {
-    UserRepository userRepository;
-    RoleRepository roleRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final CategoryRepository categoryRepository;
     final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
-    public CommandLineBootRunner(UserRepository userRepository, RoleRepository roleRepository) {
+    public CommandLineBootRunner(UserRepository userRepository, RoleRepository roleRepository,
+                                 CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -34,6 +41,8 @@ public class CommandLineBootRunner implements CommandLineRunner {
 
         createUser("admin", Set.of(adminRole, userRole));
         createUser("user", Set.of(userRole));
+
+        createCategories();
     }
 
     @Transactional
@@ -56,6 +65,15 @@ public class CommandLineBootRunner implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode(name));
             admin.setRoles(roles);
             userRepository.save(admin);
+        }
+    }
+
+    @Transactional
+    public void createCategories() {
+        Category favourites = new Category("Favourites", "❤️", "My favourite places");
+        favourites.setId(0L);
+        if (categoryRepository.findByName(favourites.getName()).isEmpty()) {
+            categoryRepository.save(favourites);
         }
     }
 }
