@@ -6,12 +6,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record NearbyRequest(
     @Latitude
-    @NotNull
     double lat,
     @Longitude
-    @NotNull
     double lng,
-    @NotNull
     double radius
 ) {
 }

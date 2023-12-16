@@ -46,15 +46,7 @@ public class PlaceService {
         categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Place place = new Place();
-        place.setCoordinate(Place.toCoordinate(placeRequest.longitude(), placeRequest.latitude()));
-        place.setName(placeRequest.name());
-        place.setDescription(placeRequest.description());
-        place.setVisible(placeRequest.visible());
-
-        Category category = new Category();
-        category.setId(categoryId);
-        place.setCategory(category);
+        Place place = Place.of(placeRequest);
         place.setUserId(username);
 
         placeRepository.save(place);
